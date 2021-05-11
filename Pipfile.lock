@@ -187,8 +187,7 @@
         },
         "csci-utils": {
             "editable": true,
-            "git": "https://github.com/csci-e-29/2021sp-csci-utils-lekshmisanthosh-chill",
-            "ref": "1a68de12fb800779523410ef34f082a61583fe93"
+            "git": "https://github.com/csci-e-29/2021sp-csci-utils-lekshmisanthosh-chill"
         },
         "dask": {
             "hashes": [
@@ -258,6 +257,7 @@
                 "sha256:1ce0e83672cc3bfdc1ffb5603e1d77ab125f24b41abc4612e22bfb3e994c0db2",
                 "sha256:f57739bf26d7396549562c0c888b96be896385ce099fb34ca89af359b7436b25"
             ],
+            "markers": "python_version >= '3.4'",
             "version": "==5.5.4"
         },
         "ipython": {
@@ -615,6 +615,7 @@
                 "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35",
                 "sha256:5c5d0a3b48ceee0b48485e0c26037c0acd7d29765ca3fbb5cb3831d347423220"
             ],
+            "markers": "os_name != 'nt'",
             "version": "==0.7.0"
         },
         "pyarrow": {
