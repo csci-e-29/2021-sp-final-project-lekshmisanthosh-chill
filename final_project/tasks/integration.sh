@@ -7,3 +7,4 @@ conda run -n integration_env python microservices/tasks/tasks.py
 conda deactivate
 conda env remove -n integration_env
 rm -r data/covid_data
+echo "Finished data generation!!"
