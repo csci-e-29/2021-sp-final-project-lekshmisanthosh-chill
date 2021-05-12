@@ -19,7 +19,6 @@ click==8.0.0
 cloudpickle==1.6.0
 colorama==0.4.3
 coverage==5.5
--e git+https://github.com/csci-e-29/2021sp-csci-utils-lekshmisanthosh-chill@f2cb764112a7c6b589062f4ffea3593f4f8b6ba5#egg=csci_utils
 dask==2021.4.1
 decorator==5.0.7
 defusedxml==0.7.1

@@ -1,41 +1,35 @@
-# Config file for automatic testing at travis-ci.org
-
 language: python
 python:
-  - 3.8
-
+- 3.8
 before_install:
 - echo -e "machine github.com\n  login $CI_USER_TOKEN" > ~/.netrc
-# Command to run tests, e.g. python setup.py test
 install:
-  - pip install pipenv
-  - pipenv install --dev --ignore-pipfile --deploy
-# install conda, for micro science environment
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - source $HOME/miniconda/etc/profile.d/conda.sh
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
-
-before_script: # code coverage tool
-   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-   - chmod +x ./cc-test-reporter
-   - ./cc-test-reporter before-build
+- pip install pipenv
+- pipenv install --dev --ignore-pipfile --deploy
+- wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+- bash miniconda.sh -b -p $HOME/miniconda
+- source $HOME/miniconda/etc/profile.d/conda.sh
+- hash -r
+- conda config --set always_yes yes --set changeps1 no
+- conda update -q conda
+before_script:
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+  > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- "./cc-test-reporter before-build"
 script:
-  - pytest --cov-report xml --cov-report term
+- pytest --cov-report xml --cov-report term
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
-
+- "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
 before_deploy:
   - chmod +x ./final_project/tasks/integration.sh
   - bash ./final_project/tasks/integration.sh
 deploy:
-  skip_cleanup: true
+  provider: heroku
+  api_key:
+    secure: qAZ6GjQOcDBga4AxXTlTfQNG0ae8xgL9mAXDwiCWWQWmLVd8lIRTx3Fw8HZYGpAX3At8cv3jMPoZog58Cmv4IcJQknm31QZe3QKEcUqs/O17Oc5SrQfDleuGFaOCYvhk9cUrEDcu2ycX/je4zCEl1OrSR7d1ikrw2YwDqxbKHk8JavY4ibDfrJy2AZhEgMo4Z3knqkWJB660QR/95SwCSEuN7wEN+ourkrrHHRSr085WX6Q6aX1Yb1Z5cnZLtiDeXfVUCuZqy9cx3SRWa+OOPPi3VmYX2BKmQ7jCoJVN99XMt00MnbvPvmCh9BeFo1usOjiGfDIzoSQ8LvSu0k29C7zdMeFBaSS5JhhFG7aIo0iTv0QzDIjBaaYU+BkZPpZPB5NV1TvDWwLQxT/BkX6zzO1+S+V+gkwm3/o2cu+n1GW6Zd2eRnR9bffTjgpIPP/H90wsRX0oYF0fMBCl6lXV8jxM4dz6HzylZYged0tpyod+zUJwbskalmlC9hnAVAWE02pv6mJ00w5+VkIt2u0q1EzM1OE0xKhVHUoxFiIzXQN2zjV/Ai8wGxsgzGiJhzjmVW5G4Rs8YpAPnlG/ajRq/dz8qVbqdASUkm52W+TKQcgh8jyaLkhn7TRmU/QqDMd352LhxvqQtwq9g1ZMd8gPEvYRe8QPYNC9ehAQ14/TTNA=
+  app: cs29-covid-visualizer
   on:
+    repo: csci-e-29/2021-sp-final-project-lekshmisanthosh-chill
     branch: main
-  provider: script
-  # Before running, get the data from s3 using the secret
-  # credentials entered at https://travis-ci.com/csci-e-29/YOUR_PSET_REPO_NAME/settings
-  # DO NOT commit these variables to git.
-  script: pipenv run python -m final_project
+  skip_cleanup: 'true'
