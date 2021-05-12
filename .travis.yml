@@ -24,6 +24,8 @@ after_script:
 before_deploy:
 - chmod +x ./final_project/tasks/integration.sh
 - bash ./final_project/tasks/integration.sh
+- pipenv uninstall csci-utils
+- pipenv update
 deploy:
   provider: heroku
   api_key:
