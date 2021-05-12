@@ -11,6 +11,7 @@ from csci_utils.luigi.task import Requirement, Requires, TargetOutput
 
 
 class DownloadCSV(ExternalTask):
+    """Luigi Task to read data from OWID and save the results for dask reads."""
     file_url = "https://covid.ourworldindata.org/data/owid-covid-data.csv"
     parent_directory = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
     target_path = "data/covid_data"
@@ -27,6 +28,7 @@ class DownloadCSV(ExternalTask):
 
 
 class AggregateWeeklyData(Task):
+    """Luigi task which aggregates the data to weekly granularity."""
     requires = Requires()
     other = Requirement(DownloadCSV)
 
@@ -63,6 +65,7 @@ class AggregateWeeklyData(Task):
 
 
 class LatestWeeklyData(Task):
+    """Luigi Task which identifies the latest weekly snapshot for each country."""
     requires = Requires()
     other = Requirement(AggregateWeeklyData)
 
@@ -101,6 +104,7 @@ class LatestWeeklyData(Task):
 
 
 class CountryDimension(Task):
+    """Luigi Task to create the country dimension table for lookups."""
     requires = Requires()
     raw = Requirement(DownloadCSV)
 
