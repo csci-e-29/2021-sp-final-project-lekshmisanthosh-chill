@@ -10,8 +10,17 @@ st.set_page_config(layout="wide")
 alt.data_transformers.disable_max_rows()
 
 
-def plot_scatter_with_regression(x_col, source, y_col="death_per_population_pct"):
-    """Helper function to plot scatter plots with regression lines."""
+def plot_scatter_with_regression(
+    x_col: str, source: pd.DataFrame, y_col: str = "death_per_population_pct"
+):
+    """Helper function to plot scatter plots with regression lines for death 5.
+    :args
+        x_col: The X axis
+        source: dataframe with the x_col and y_col
+        y_col: The Y axis
+    :returns
+        alt.Chart layered chart object
+    """
     scatter = (
         alt.Chart(source)
         .mark_circle(color="#E57373")
