@@ -29,7 +29,7 @@ before_deploy:
 deploy:
   provider: heroku
   api_key: $HEROKU_API_KEY
-  app: cs29-covid-visualizer
+  app: csc29-covid-viz
   on:
     repo: lekshmisanthosh-chill/2021-sp-final-project-lekshmisanthosh-chill
     branch: main
