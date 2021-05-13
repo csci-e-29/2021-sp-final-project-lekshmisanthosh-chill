@@ -1,44 +1,53 @@
+""" Module which performs ETL on OWID Covid 19 data.
+"""
 import os
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import dask.dataframe as dd
-from luigi import ExternalTask, Parameter, Task, build, LocalTarget, BoolParameter
+from luigi import ExternalTask, Task, build, LocalTarget
 
-from csci_utils.luigi.dask.target import CSVTarget, ParquetTarget
+from csci_utils.luigi.dask.target import CSVTarget
 from csci_utils.luigi.task import Requirement, Requires, TargetOutput
 
 
 class DownloadCSV(ExternalTask):
-    """Luigi Task to read data from OWID and save the results for dask reads."""
+    """Luigi Task to download Covid data csv file from OWID and save the results as a dask collection."""
+
     file_url = "https://covid.ourworldindata.org/data/owid-covid-data.csv"
     parent_directory = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
     target_path = "data/covid_data"
 
-    local_directory = os.path.join(parent_directory, "data/covid_data/")
+    local_directory = os.path.join(str(parent_directory), "data/covid_data/")
     output = TargetOutput(
         file_pattern=local_directory, ext="", target_class=CSVTarget, flag=False
     )
 
     def run(self):
+        """Writes a set of CSV files to data/covid_data folder."""
         data = pd.read_csv(self.file_url)
         ddf = dd.from_pandas(data, chunksize=5000)
         self.output().write_dask(collection=ddf, filename=self.target_path)
 
 
 class AggregateWeeklyData(Task):
-    """Luigi task which aggregates the data to weekly granularity."""
+    """Luigi task which aggregates covid daily stats by week."""
+
     requires = Requires()
     other = Requirement(DownloadCSV)
 
     parent_directory = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
-    target_filename = os.path.join(parent_directory, "data/weekly_data.csv")
+    target_filename = os.path.join(str(parent_directory), "data/weekly_data.csv")
 
     def output(self):
+        """Specifies the LocalTarget output for the task"""
         return LocalTarget(self.target_filename)
 
     def run(self):
+        """Aggregates case volume, stringency index and additional stats by country and week.
+        Writes the results to data/weekly_data.csv
+        """
         raw_data = self.input()["other"].read_dask(filename="*.part").compute()
         raw_data["date"] = pd.to_datetime(raw_data.date)
         raw_data["week"] = raw_data["date"].apply(
@@ -66,16 +75,19 @@ class AggregateWeeklyData(Task):
 
 class LatestWeeklyData(Task):
     """Luigi Task which identifies the latest weekly snapshot for each country."""
+
     requires = Requires()
     other = Requirement(AggregateWeeklyData)
 
     parent_directory = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
-    target_filename = os.path.join(parent_directory, "data/latest_data.csv")
+    target_filename = os.path.join(str(parent_directory), "data/latest_data.csv")
 
     def output(self):
+        """Specifies the LocalTarget output for the task."""
         return LocalTarget(self.target_filename)
 
     def run(self):
+        """Identifies the latest summary statistic by country and writes the results to data/latest_data.csv"""
         with self.input()["other"].open("r") as f:
             data = f.readlines()
 
@@ -105,16 +117,19 @@ class LatestWeeklyData(Task):
 
 class CountryDimension(Task):
     """Luigi Task to create the country dimension table for lookups."""
+
     requires = Requires()
     raw = Requirement(DownloadCSV)
 
     parent_directory = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
-    target_filename = os.path.join(parent_directory, "data/country_dimension.csv")
+    target_filename = os.path.join(str(parent_directory), "data/country_dimension.csv")
 
     def output(self):
+        """Specifies the LocalTarget output for the task."""
         return LocalTarget(self.target_filename)
 
     def run(self):
+        """Writes the country level statistics to data/country_dimension.csv"""
         raw_data = self.input()["raw"].read_dask(filename="*.part").compute()
 
         country_dimension = (
