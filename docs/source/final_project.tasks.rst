@@ -12,11 +12,3 @@ final\_project.tasks.tasks module
     :undoc-members:
     :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: final_project.tasks
-    :members:
-    :undoc-members:
-    :show-inheritance:

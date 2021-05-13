@@ -7,7 +7,6 @@ Subpackages
 .. toctree::
 
     final_project.tasks
-    final_project.visualization
 
 Module contents
 ---------------
